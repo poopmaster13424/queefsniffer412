@@ -1,0 +1,322 @@
+setfpscap(10)
+game:GetService("RunService"):Set3dRenderingEnabled(true)
+settings().Rendering.QualityLevel = 1
+UserSettings().GameSettings.MasterVolume = 0
+local atmsavailable = Instance.new("ScreenGui")
+local frame = Instance.new("Frame")
+local round = Instance.new("UICorner")
+local text = Instance.new("TextLabel")
+
+atmsavailable.Name = "atms-available"
+atmsavailable.Parent = game.CoreGui
+atmsavailable.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+frame.Name = "frame"
+frame.Parent = atmsavailable
+frame.AnchorPoint = Vector2.new(0.5, 0)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Position = UDim2.new(0.5, 0, 0.057, 0)
+frame.Size = UDim2.new(0, 408, 0, 49)
+
+round.Name = "round"
+round.Parent = frame
+
+text.Name = "text"
+text.Parent = frame
+text.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+text.BackgroundTransparency = 1.000
+text.BorderColor3 = Color3.fromRGB(50, 168, 82)
+text.BorderSizePixel = 0
+text.Position = UDim2.new(0.0318627469, 0, 0.20408164, 0)
+text.Size = UDim2.new(0, 381, 0, 28)
+text.Font = Enum.Font.GothamBold
+text.Text = "ATMS AVAILABLE: 30"
+text.TextColor3 = Color3.fromRGB(255, 209, 171) --- change color for how many atms ----
+text.TextSize = 18.000
+
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- doom#1000
+task.spawn(function()
+    while wait() do
+        getgenv().atms_available = 0
+        for _, cashier in ipairs(workspace.Cashiers:GetChildren()) do
+            if cashier.Humanoid.Health == 100 then
+                getgenv().atms_available = getgenv().atms_available + 1
+            end
+        end
+        text.Text = 'ATMS AVAILABLE: '..getgenv().atms_available
+        
+        wait(getgenv().refresh_rate)
+    end
+end)
+
+if not game:IsLoaded() then
+
+    game.Loaded:Wait()
+    
+    end
+    local decalsyeeted = true -- Leaving this on makes games look shitty but the fps goes up by at least 20.
+    local g = game
+    local w = g.Workspace
+    local l = g.Lighting
+    local t = w.Terrain
+    t.WaterWaveSize = 0
+    t.WaterWaveSpeed = 0
+    t.WaterReflectance = 0
+    t.WaterTransparency = 0
+    l.GlobalShadows = false
+    l.FogEnd = 9e9
+    l.Brightness = 0
+    settings().Rendering.QualityLevel = "Level01"
+    for i,v in pairs(g:GetDescendants()) do
+        if v:IsA("Part") or v:IsA("Union") or v:IsA("MeshPart") then
+            v.Material = "Plastic"
+    v.Reflectance = 0
+    elseif v:IsA("Decal") and decalsyeeted then 
+    v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then 
+    v.Lifetime = NumberRange.new(0)
+        end
+    end
+
+-- Configurations
+getgenv().Running = true
+
+if getgenv().Running == false then return end
+local Configuration = {
+    Webhook = "https://discord.com/api/webhooks/1177096935530836000/q4E6pxUd_nEhKOGZNHuftBgnMS3sQe32z0D5LzR7MYZirzN6Y01Z65qqSpTieBsyq8Ka",
+    WebhookType = "Delete",
+    YOffset = 2,
+	Timeout = 8,
+    PunchCount = 1
+}
+
+-- Init. WebhookApi
+local WebhookApi = loadstring(game:HttpGet("https://icebear.lol/Utilities/WebhookHandler.txt"))()
+local Message
+
+-- WebhookImages
+local Images = {
+    Idle = "https://media.discordapp.net/attachments/1181597658918428712/1181597732520075435/tired.gif?ex=6581a3a4&is=656f2ea4&hm=0f01643d06105065ab8e828ba872e7143ec328daecd19353718d6ae989289c8c&=&width=682&height=682",
+    Running = "https://media.discordapp.net/attachments/1181597658918428712/1181597732075491328/swinging.gif?ex=6581a3a4&is=656f2ea4&hm=8ee6d7052660c6effba46425d41d7b8367aa349332ad879d9e04ff173161b834&=&width=682&height=682",
+    Waiting = "https://media.discordapp.net/attachments/1181597658918428712/1181739623446229033/icebear_walk.gif?ex=658227c9&is=656fb2c9&hm=c65926dde2e2cf5ed2b43313ee7530f2283188a412c8493e5e7b6ca5eb655624&=&width=682&height=682"
+}
+
+-- AntiAfk
+loadstring(game:HttpGet("https://icebear.lol/Utilities/AntiAfk.txt"))()
+
+-- Main
+local LocalPlayer = game.Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
+local Backpack = LocalPlayer.Backpack
+local Money = LocalPlayer.DataFolder.Currency
+local StartingCash = Money.Value
+
+local Ignore = {}
+
+-- Important Functions
+local function GetRegister()
+    for _, Model in ipairs(game.Workspace.Cashiers:GetChildren()) do
+        if Model.Humanoid.Health > 0 and not table.find(Ignore, Model) then
+            return Model
+        end
+    end
+
+    return false
+end
+
+local function CheckCash()
+    for _, Cash in ipairs(game.Workspace.Ignored.Drop:GetChildren()) do
+        if (Character.PrimaryPart.Position - Cash.Position).Magnitude <= 11 then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function PunchRegister(Register)
+    local Count = 0
+    local HealthCheck = Register.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+        Count += 1
+    end)
+
+    repeat
+        if Backpack:FindFirstChild("Combat") then
+            Character.Humanoid:EquipTool(Backpack.Combat)
+        else
+            Character.Combat:Activate()
+        end
+        Character.PrimaryPart.CFrame = Register.Open.CFrame * CFrame.new(0, -10, 0)
+        
+        task.wait()
+    until Character:FindFirstChildOfClass("Highlight") or getgenv().Running == false
+
+    local Timeout = tick()
+    repeat
+        Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+        Character.PrimaryPart.CFrame = Register.Open.CFrame * CFrame.new(0, -Configuration.YOffset, 0)
+
+        if tick() - Timeout >= Configuration.Timeout then
+            table.insert(Ignore, Register)
+            break
+        end
+        task.wait()
+    until Register.Humanoid.Health <= 0 or Count == Configuration.PunchCount or getgenv().Running == false
+    HealthCheck:Disconnect()
+end
+
+local function CreateJSON(Desc, Image)
+    local Content = {
+        content = nil,
+        embeds = {
+            {
+                description = Desc,
+                url = Image,
+                color = 16711679,
+                author = {
+                    name = "icebear.lol",
+                    icon_url = Image,
+                },
+                footer = {
+                    text = "https://discord.gg/YMpq6ZhNTP"
+                }
+            }
+        },
+        attachments = {}
+    }
+
+    return Content
+end
+
+local function MessageCycle()
+    if Message then
+        if Configuration.WebhookType == "Delete" then
+            Message:Delete()
+            Message = WebhookApi.new(Configuration.Webhook, CreateJSON("**Status: Running**\nUsername: ``"..LocalPlayer.Name.."``\nCash: "..tostring(Money.Value).."\nProfit: "..tostring(Money.Value - StartingCash).."\n\nLatest Update: <t:"..os.time()..":R>", Images.Running))
+            Message:Post()
+        elseif Configuration.WebhookType == "Edit" then
+            Message:Edit(CreateJSON("**Status: Running**\nUsername: ``"..LocalPlayer.Name.."``\nCash: "..tostring(Money.Value).."\nProfit: "..tostring(Money.Value - StartingCash).."\n\nLatest Update: <t:"..os.time()..":R>", Images.Running))
+        end
+    else
+        Message = WebhookApi.new(Configuration.Webhook, CreateJSON("**Status: Running**\nUsername: ``"..LocalPlayer.Name.."``\nCash: "..tostring(Money.Value).."\nProfit: "..tostring(Money.Value - StartingCash).."\n\nLatest Update: <t:"..os.time()..":R>", Images.Running))
+        Message:Post()
+    end
+end
+
+Message = WebhookApi.new(Configuration.Webhook, CreateJSON("**Loading Farm**...\n\nLatest Update: <t:"..os.time()..":R>", Images.Waiting))
+Message:Post()
+-- Farming
+
+while getgenv().Running == true and task.wait() do
+    pcall(function()
+        local Register = GetRegister()
+        if Register ~= false then
+            local Starting = tick()
+            local Timedout = false
+            MessageCycle()
+            repeat
+                -- Teleporting Character
+                PunchRegister(Register)
+                if tick() - Starting >= Configuration.Timeout then
+                    print("Timed Out!")
+                    table.insert(Ignore, Register)
+                    break
+                end
+
+                task.wait()
+            until Register.Humanoid.Health <= 0 or Character.BodyEffects["K.O"].Value == true or getgenv().Running == false
+
+            if Character.BodyEffects["K.O"].Value == true then
+                repeat task.wait() until Character.BodyEffects["K.O"].Value == false or Character.BodyEffects.Dead.Value == true
+            elseif Timedout == true then
+                return
+            else
+                local TimeoutCheck = tick()
+                while task.wait() do
+                    Character.PrimaryPart.CFrame = Register.Open.CFrame * CFrame.new(0, -7, -5)
+                    if tick() - TimeoutCheck >= Configuration.Timeout then
+                        print("Timed Out!")
+                        break
+                    end
+
+                    if CheckCash() == true then
+                        local Completed = false
+                        task.spawn(function()
+                            for _, Cash in ipairs(game.Workspace.Ignored.Drop:GetChildren()) do
+                                if (Character.PrimaryPart.Position - Cash.Position).Magnitude <= 11 then
+                                    fireclickdetector(Cash.ClickDetector)
+                                    task.wait(0.75)
+                                end
+                            end
+
+                            Completed = true
+                        end)
+
+                        TimeoutCheck = tick()
+                        repeat
+                            Character.PrimaryPart.CFrame = Register.Open.CFrame * CFrame.new(0, -7, 0)
+
+                            if tick() - TimeoutCheck >= Configuration.Timeout then
+                                print("Timed Out!")
+                                break
+                            end 
+                            task.wait()
+                        until Completed == true or getgenv().Running == false
+
+                        break
+                    end
+                end
+            end
+        else
+            Character.PrimaryPart.CFrame = CFrame.new(0, 1500, 0)
+            Character.PrimaryPart.Velocity = Vector3.new(0, 0, 0)
+        end
+    end)
+end
+
+if getgenv().Running == false then
+	if Message then
+		Message:Delete()
+	    Message = WebhookApi.new(Configuration.Webhook, CreateJSON("**Status: Stopped**\nUsername: ``"..LocalPlayer.Name.."``\nCash: "..tostring(Money.Value).."\nProfit: "..tostring(Money.Value - StartingCash).."\n\nLatest Update: <t:"..os.time()..":R>", Images.Idle))            
+		Message:Post()
+	end
+end
